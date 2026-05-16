@@ -1,6 +1,6 @@
 # 🌌 Project Portal Anime - Web Wrapper Edition
 ![Version](https://img.shields.io/badge/Version-1.0.0--Stable-blueviolet?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Windows-green?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Android%20%7C%-green?style=for-the-badge)
 ![Built With](https://img.shields.io/badge/Built%20With-AppMint%20Premium-FFD700?style=for-the-badge)
 ![Style](https://img.shields.io/badge/Design-Neon%20Cyberpunk-00FF41?style=for-the-badge)
 **Project Portal Anime** adalah aplikasi *high-performance web wrapper* yang dirancang khusus untuk memberikan pengalaman menonton anime yang mulus, bersih, dan cepat. Menggunakan teknologi **AppMint Premium**, aplikasi ini mengubah portal web menjadi aplikasi native dengan optimasi maksimal.
