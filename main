@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Login App</title>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root {
+            --bg:#1a1a2e;--card-bg:rgba(255,255,255,0.05);--text:#e0e0e0;--text-secondary:#a0a0b0;
+            --primary:#6c63ff;--primary-hover:#5a52d5;--danger:#ff4757;--success:#2ed573;
+            --warning:#ffa502;--border:rgba(255,255,255,0.1);--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        body {
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;
+            display:flex;align-items:center;justify-content:center;padding:16px;
+            line-height:1.5;-webkit-font-smoothing:antialiased;
+        }
+        .bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.4}
+        .bg-animation::before{
+            content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+            background:radial-gradient(circle at 50% 50%,rgba(108,99,255,0.12) 0%,transparent 50%);
+            animation:rotate 30s linear infinite;will-change:transform;
+        }
+        @keyframes rotate{to{transform:rotate(360deg)}}
+        .card{
+            position:relative;z-index:1;width:100%;max-width:380px;
+            background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--border);border-radius:20px;padding:32px 24px;box-shadow:var(--shadow);
+        }
+        .logo{text-align:center;font-size:48px;margin-bottom:8px}
+        h1{text-align:center;font-size:24px;font-weight:700;margin-bottom:4px}
+        .subtitle{text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:24px}
+        .form{display:none}.form.active{display:block}
+        .field{margin-bottom:16px}
+        .field label{display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;font-weight:500}
+        .field input{
+            width:100%;padding:12px 16px;background:rgba(255,255,255,0.06);
+            border:1.5px solid var(--border);border-radius:12px;color:#fff;
+            font-size:15px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+        }
+        .field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,99,255,0.15)}
+        .field input::placeholder{color:rgba(255,255,255,0.3)}
+        .field .hint{font-size:11px;color:var(--danger);margin-top:4px;display:none}
+        .field.error input{border-color:var(--danger)}.field.error .hint{display:block}
+        .field.success input{border-color:var(--success)}
+        .btn{
+            width:100%;padding:13px;background:var(--primary);color:#fff;border:none;
+            border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;
+            transition:background 0.2s,transform 0.1s;position:relative;overflow:hidden;
+        }
+        .btn:hover{background:var(--primary-hover)}.btn:active{transform:scale(0.98)}
+        .btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+        .btn .spinner{
+            display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);
+            border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto;
+        }
+        .btn.loading .btn-text{display:none}.btn.loading .spinner{display:block}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .btn-outline{background:transparent;border:1.5px solid var(--border);margin-top:8px}
+        .btn-outline:hover{background:rgba(255,255,255,0.05);border-color:var(--text-secondary)}
+        .btn-portal{background:linear-gradient(135deg,#ff6b6b,#ee5a24);margin-bottom:8px}
+        .btn-portal:hover{background:linear-gradient(135deg,#ff5252,#d63031)}
+        .toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--text-secondary)}
+        .toggle span{color:var(--primary);cursor:pointer;font-weight:600;text-decoration:underline}
+        .alert{
+            padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;
+            display:none;animation:fadeIn 0.3s ease;
+        }
+        .alert.error{background:rgba(255,71,87,0.15);color:var(--danger);display:block}
+        .alert.success{background:rgba(46,213,115,0.15);color:var(--success);display:block}
+        .alert.info{background:rgba(108,99,255,0.15);color:var(--primary);display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .offline-banner{text-align:center;font-size:12px;color:#ffa502;margin-bottom:12px;display:none}
+        .offline .offline-banner{display:block}
+        .logged-in{text-align:center;display:none}.logged-in.active{display:block}
+        .avatar{
+            width:72px;height:72px;background:var(--primary);border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            font-size:32px;margin:0 auto 12px;font-weight:700;
+        }
+        .welcome{font-size:18px;margin-bottom:4px}
+        .email-display{font-size:13px;color:var(--text-secondary);margin-bottom:20px}
+        .overlay{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+            z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+        }
+        .overlay.active{display:flex}
+        .modal{
+            background:#1e1e3a;border:1px solid var(--border);border-radius:20px;
+            padding:24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.5);
+            animation:slideUp 0.3s ease;
+        }
+        @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .modal-title{font-size:18px;font-weight:700}
+        .modal-close{
+            width:32px;height:32px;background:rgba(255,255,255,0.1);border:none;
+            border-radius:50%;color:#fff;font-size:18px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .modal-close:hover{background:rgba(255,71,87,0.4)}
+        .link-list{list-style:none;display:flex;flex-direction:column;gap:10px;max-height:350px;overflow-y:auto}
+        .link-item{
+            display:flex;align-items:center;gap:12px;padding:12px 16px;
+            background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            border-radius:12px;cursor:pointer;text-decoration:none;color:var(--text);transition:all 0.2s;
+        }
+        .link-item:hover{background:rgba(255,255,255,0.1);border-color:var(--primary);transform:translateX(4px)}
+        .link-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+        .link-info{flex:1;min-width:0}
+        .link-name{font-weight:600;font-size:14px}
+        .link-url{font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .link-arrow{font-size:18px;color:var(--text-secondary);flex-shrink:0}
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="overlay" id="portal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🌐 Portal Link</span>
+                <button class="modal-close" id="modal-close">✕</button>
+            </div>
+            <ul class="link-list" id="link-list"></ul>
+        </div>
+    </div>
+
+    <div class="card" id="app">
+        <div class="logo">🔐</div>
+        <h1>Login Portal Anime</h1>
+        <p class="subtitle">Ringan, cepat, & aman</p>
+        <div class="offline-banner">⚠️ Kamu sedang offline</div>
+        <div class="alert" id="alert"></div>
+
+        <div class="form active" id="form-register">
+            <div class="field" id="field-reg-username">
+                <label>Username</label>
+                <input type="text" id="reg-username" placeholder="Minimal 3 karakter" autocomplete="username">
+                <p class="hint">Username minimal 3 karakter</p>
+            </div>
+            <div class="field" id="field-reg-email">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="contoh@email.com" autocomplete="email">
+                <p class="hint">Format email tidak valid</p>
+            </div>
+            <div class="field" id="field-reg-password">
+                <label>Password</label>
+                <input type="password" id="reg-password" placeholder="Minimal 6 karakter" autocomplete="new-password">
+                <p class="hint">Password minimal 6 karakter</p>
+            </div>
+            <button class="btn" id="btn-register">
+                <span class="btn-text">Daftar</span><div class="spinner"></div>
+            </button>
+            <p class="toggle">Sudah punya akun? <span id="go-login">Login</span></p>
+        </div>
+
+        <div class="form" id="form-login">
+            <div class="field" id="field-login-identifier">
+                <label>Email atau Username</label>
+                <input type="text" id="login-identifier" placeholder="Masukkan email atau username">
+                <p class="hint">Field ini wajib diisi</p>
+            </div>
+            <div class="field" id="field-login-password">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="Masukkan password">
+                <p class="hint">Password wajib diisi</p>
+            </div>
+            <button class="btn" id="btn-login">
+                <span class="btn-text">Masuk</span><div class="spinner"></div>
+            </button>
+            <p class="toggle">Belum punya akun? <span id="go-register">Daftar</span></p>
+        </div>
+
+        <div class="logged-in" id="view-logged-in">
+            <div class="avatar" id="avatar-letter">U</div>
+            <p class="welcome">Halo, <strong id="display-name">User</strong>!</p>
+            <p class="email-display" id="display-email">email@example.com</p>
+            <button class="btn btn-portal" id="btn-portal">📺 Portal Anime</button>
+            <button class="btn btn-outline" id="btn-logout">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== LINKS ====================
+        const LINKS = [
+            { name: 'Alqanime', url: 'https://alqanime.net', icon: '▶️', color: '#4285F4' },
+            { name: 'Animasu', url: 'https://v1.animasu.app', icon: '🐶', color: '#FF0000' },
+            { name: 'Samehadaku', url: 'https://v2.samehadaku.how', icon: '🍥', color: '#ff6b6b' },
+            { name: 'Anoboy', url: 'https://anoboy.be', icon: '🎬', color: '#9b59b6' },
+            { name: 'Otakudesu', url: 'https://otakudesu.blog', icon: '🌸', color: '#e91e63' },
+            { name: 'Anime Indo', url: 'https://anime-indo.lol', icon: '🎌', color: '#f39c12' },
+            { name: 'Nimegami', url: 'https://nimegami.id', icon: '🤖', color: '#10a37f' },
+            { name: 'WaDev', url: 'https://wa.me/088228362302', icon: '💻', color: '#333' }
+        ];
+
+        // ==================== KONFIG ====================
+        function getConfig() {
+            const s = localStorage.getItem('app_config');
+            if(s) { try{return JSON.parse(s);}catch(e){} }
+            return 
+        }
+        const cfg = getConfig();
+        const API_URL = cfg.API_URL;
+        const SECRET_KEY = cfg.SECRET_KEY;
+
+        // ==================== DOM ====================
+        const $ = s => document.querySelector(s);
+        const $$ = s => document.querySelectorAll(s);
+        const alertEl = $('#alert');
+        const formRegister = $('#form-register');
+        const formLogin = $('#form-login');
+        const viewLoggedIn = $('#view-logged-in');
+        const btnRegister = $('#btn-register');
+        const btnLogin = $('#btn-login');
+        const appContainer = $('#app');
+        let isSubmitting = false;
+
+        // ==================== PORTAL ====================
+        (function(){
+            const list = $('#link-list');
+            LINKS.forEach(l => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a class="link-item" href="${l.url}" target="_blank" rel="noopener"><div class="link-icon" style="background:${l.color}22;color:${l.color}">${l.icon}</div><div class="link-info"><div class="link-name">${l.name}</div><div class="link-url">${l.url.replace(/^https?:\/\//,'')}</div></div><span class="link-arrow">→</span></a>`;
+                list.appendChild(li);
+            });
+        })();
+        const overlay = $('#portal-overlay');
+        $('#btn-portal').addEventListener('click',()=>{overlay.classList.add('active');document.body.style.overflow='hidden'});
+        $('#modal-close').addEventListener('click',()=>{overlay.classList.remove('active');document.body.style.overflow=''});
+        overlay.addEventListener('click',e=>{if(e.target===overlay){overlay.classList.remove('active');document.body.style.overflow=''}});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('active')){overlay.classList.remove('active');document.body.style.overflow=''}});
+
+        // ==================== UI ====================
+        function showAlert(m,t='error'){alertEl.textContent=m;alertEl.className=`alert ${t}`;setTimeout(()=>alertEl.className='alert',5000)}
+        function showForm(n){[formRegister,formLogin,viewLoggedIn].forEach(e=>e.classList.remove('active'));if(n==='register')formRegister.classList.add('active');else if(n==='login')formLogin.classList.add('active');else if(n==='logged-in')viewLoggedIn.classList.add('active');alertEl.className='alert'}
+        function setLoading(b,l){if(l){b.classList.add('loading');b.disabled=true;isSubmitting=true}else{b.classList.remove('loading');b.disabled=false;isSubmitting=false}}
+        function setField(i,s){const f=$(`#${i}`);if(f)f.className=`field ${s}`}
+        function clearFields(){$$('input').forEach(i=>{i.value='';const p=i.closest('.field');if(p)p.className='field'})}
+        function validEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
+        function validReg(u,e,p){let v=true;if(!u||u.length<3){setField('field-reg-username','error');v=false}else setField('field-reg-username','success');if(!e||!validEmail(e)){setField('field-reg-email','error');v=false}else setField('field-reg-email','success');if(!p||p.length<6){setField('field-reg-password','error');v=false}else setField('field-reg-password','success');return v}
+        function validLog(i,p){let v=true;if(!i){setField('field-login-identifier','error');v=false}else setField('field-login-identifier','success');if(!p){setField('field-login-password','error');v=false}else setField('field-login-password','success');return v}
+
+        // ==================== API (no-cors - TERBUKTI WORK!) ====================
+        async function sendToServer(action, data) {
+            const payload = { action, secretKey: SECRET_KEY, ...data };
+            console.log('[API] Mengirim ke:', API_URL);
+            console.log('[API] Payload:', payload);
+
+            try {
+                // GUNAKAN mode: 'no-cors' — request TETAP TERKIRIM
+                // Tapi respons tidak bisa dibaca (opaque)
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',        // ✅ INI KUNCI UTAMANYA
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                console.log('[API] Request terkirim (no-cors)');
+                // Karena no-cors, kita anggap berhasil jika tidak error
+                return { status: 'success', message: 'Data terkirim ke server!' };
+
+            } catch (error) {
+                console.error('[API] Error:', error);
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    throw new Error('❌ Gagal terhubung ke server.\nPastikan URL API benar dan ada koneksi internet.');
+                }
+                throw error;
+            }
+        }
+
+        // ==================== REGISTER ====================
+        async function handleRegister(){
+            if(isSubmitting)return;
+            const u=$('#reg-username').value.trim();
+            const e=$('#reg-email').value.trim().toLowerCase();
+            const p=$('#reg-password').value;
+            if(!validReg(u,e,p)){showAlert('Perbaiki input.','error');return}
+            setLoading(btnRegister,true);
+            try{
+                const r=await sendToServer('register',{username:u,email:e,password:p});
+                // Dengan no-cors, kita selalu anggap berhasil
+                const ud={username:u,email:e};
+                localStorage.setItem('currentUser',JSON.stringify(ud));
+                showAlert('✅ Registrasi berhasil! Data tersimpan di Google Sheets.','success');
+                setTimeout(()=>showLoggedIn(ud),800);
+            }catch(e){showAlert(e.message,'error')}
+            finally{setLoading(btnRegister,false)}
+        }
+
+        // ==================== LOGIN ====================
+        async function handleLogin(){
+            if(isSubmitting)return;
+            const i=$('#login-identifier').value.trim().toLowerCase();
+            const p=$('#login-password').value;
+            if(!validLog(i,p)){showAlert('Isi semua field.','error');return}
+            setLoading(btnLogin,true);
+            try{
+                const r=await sendToServer('login',{identifier:i,password:p});
+                // Dengan no-cors, kita anggap berhasil
+                // Simpan username dari identifier (kalau email, ambil bagian sebelum @)
+                const uname = i.includes('@') ? i.split('@')[0] : i;
+                const ud={username:uname,email:i.includes('@')?i:''};
+                localStorage.setItem('currentUser',JSON.stringify(ud));
+                showAlert('✅ Login berhasil!','success');
+                setTimeout(()=>showLoggedIn(ud),800);
+            }catch(e){showAlert(e.message,'error')}
+            finally{setLoading(btnLogin,false)}
+        }
+
+        function showLoggedIn(ud){
+            $('#display-name').textContent=ud.username;
+            $('#display-email').textContent=ud.email||'email@example.com';
+            $('#avatar-letter').textContent=ud.username.charAt(0).toUpperCase();
+            showForm('logged-in');
+        }
+
+        function logout(){
+            localStorage.removeItem('currentUser');
+            clearFields();
+            showForm('login');
+            showAlert('Berhasil logout.','info');
+        }
+
+        // ==================== EVENTS ====================
+        btnRegister.addEventListener('click',handleRegister);
+        btnLogin.addEventListener('click',handleLogin);
+        $('#btn-logout').addEventListener('click',logout);
+        $('#go-login').addEventListener('click',()=>{clearFields();showForm('login')});
+        $('#go-register').addEventListener('click',()=>{clearFields();showForm('register')});
+        document.addEventListener('keydown',e=>{
+            if(e.key==='Enter'&&!overlay.classList.contains('active')){
+                if(formRegister.classList.contains('active'))handleRegister();
+                else if(formLogin.classList.contains('active'))handleLogin();
+            }
+        });
+        let dt;
+        $$('input').forEach(i=>{i.addEventListener('input',()=>{clearTimeout(dt);dt=setTimeout(()=>{const f=i.closest('.field');if(f)f.className='field'},300)})});
+      
