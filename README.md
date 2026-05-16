@@ -32,7 +32,7 @@ Aplikasi ini dikembangkan dengan fokus pada kenyamanan pengguna dan efisiensi pe
 ## 🛡️ Keamanan & Privasi
 Aplikasi ini sangat menghargai privasi pengguna. 
 - Sistem **AdBlock** kami hanya bekerja pada level elemen iklan dan tidak membaca data pribadi.
-- Data login disimpan secara terenkripsi melalui sistem keamanan **AppMint**.
+- Data login disimpan secara terenkripsi melalui sistem keamanan **Hash265**.
 ---
 ## 📝 Catatan Pengembangan
 Proyek ini merupakan hasil eksperimen kreatif yang menggabungkan kemudahan *Web Wrapper* dengan kecanggihan integrasi AI. Pengembangan difokuskan pada perangkat Android agar tetap mendapatkan performa yang "smooth" tanpa lag, bahkan di perangkat spesifikasi menengah.
