@@ -8,6 +8,10 @@ Harap baca Perjanjian Lisensi Pengguna Akhir ini ("Perjanjian") dengan saksama s
 1. PEMBERIAN LISENSI
 Developer memberikan lisensi terbatas, non-eksklusif, dan tidak dapat dipindahtangankan kepada Anda untuk:
 Mengunduh, menginstal, dan menggunakan aplikasi pada satu perangkat Android milik pribadi untuk penggunaan non-komersial.
+Izin Forking: Anda diperbolehkan melakukan fork pada repositori resmi Project Portal Anime.
+Batasan Kode: Izin modifikasi dan penggunaan kembali hanya berlaku terbatas pada file kode dasar (index.html).
+Atribusi Wajib: Setiap fork atau penggunaan kode dasar (index.html) wajib menyertakan file lisensi asli ini dan memberikan kredit (atribusi) yang jelas ke project awal: "Original Project by protocol404".
+Tujuan Non-Komersial: Kode hasil fork tidak diperbolehkan untuk digunakan dalam produk komersial tanpa izin tertulis dari Developer utama.
 
 2. BATASAN PENGGUNAAN
 Anda DILARANG untuk:
